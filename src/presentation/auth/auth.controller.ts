@@ -1,6 +1,5 @@
 import {Request, Response} from 'express';
-import {AuthRepository, CustomError, RegisterUserDto} from "../../domain";
-import {JwtAdapter} from "../../config";
+import {AuthRepository, CustomError, RegisterUser, RegisterUserDto} from "../../domain";
 import {UserModel} from "../../data";
 
 export class AuthController {
@@ -23,12 +22,10 @@ export class AuthController {
 
         if (error) res.status(400).json({error});
 
-        this.authRepository.register(registerUserDto!)
-            .then((async (user) => res.json({
-                user,
-                token: await JwtAdapter.generateToken({id: user.id}),
-            })))
-            .catch(error => this.handleError(error, res));
+        new RegisterUser(this.authRepository)
+            .execute(registerUserDto!)
+            .then(data => res.status(200).json({data}))
+            .catch(err => this.handleError(err, res));
     }
 
     loginUser = (req: Request, res: Response) => {
@@ -37,9 +34,9 @@ export class AuthController {
 
     getUsers = (req: Request, res: Response) => {
         UserModel.find()
-            .then(users => res.json({
+            .then(() => res.json({
                 user: req.body.user,
             }))
-            .catch(error => res.status(500).json({error: 'Internal Server Error'}));
+            .catch(() => res.status(500).json({error: 'Internal Server Error'}));
     }
 }

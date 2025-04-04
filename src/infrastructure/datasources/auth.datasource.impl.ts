@@ -2,6 +2,7 @@ import {AuthDatasource, CustomError, RegisterUserDto, UserEntity} from "../../do
 import {UserModel} from "../../data";
 import {BcryptAdapter} from "../../config";
 import {UserMapper} from "../mappers/user.mapper";
+import { LoginUserDto } from "../../domain/dtos/auth/login-user.dto";
 
 type HashFunction = (password: string) => string;
 type CompareFunction = (password: string, hashed: string) => boolean;
@@ -12,6 +13,10 @@ export class AuthDataSourceImpl implements AuthDatasource {
         private readonly hashPassword: HashFunction = BcryptAdapter.hash,
         private readonly comparePassword: CompareFunction = BcryptAdapter.compare,
     ) {
+    }
+
+    login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+        throw new Error("Method not implemented.");
     }
 
     async register(registerUserDto: RegisterUserDto): Promise<UserEntity> {
