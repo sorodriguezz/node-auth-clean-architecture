@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
-import {AuthRepository, CustomError, RegisterUser, RegisterUserDto} from "../../domain";
+import {AuthRepository, CustomError, LoginUserDto, RegisterUser, RegisterUserDto} from "../../domain";
 import {UserModel} from "../../data";
+import {LoginUser} from "../../domain/use-cases/auth/login-user.use-case";
 
 export class AuthController {
     constructor(
@@ -29,7 +30,14 @@ export class AuthController {
     }
 
     loginUser = (req: Request, res: Response) => {
-        res.json('login user controller')
+        const [error, loginUserDto] = LoginUserDto.create(req.body);
+
+        if (error) res.status(400).json({error});
+
+        new LoginUser(this.authRepository)
+            .execute(loginUserDto!)
+            .then(data => res.status(200).json(data))
+            .catch(err => this.handleError(err, res));
     }
 
     getUsers = (req: Request, res: Response) => {
