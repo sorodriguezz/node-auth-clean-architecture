@@ -4,3 +4,6 @@ node_modules/
 dist/
 build/
 mongo/
+
+.idea
+package-lock.json
